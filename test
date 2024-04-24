@@ -1,0 +1,97 @@
+const axios = require('axios');
+const request = require('request');
+const endpointUrl = "https://4y4us2rgul.execute-api.us-east-1.amazonaws.com/Prod";
+
+test(' Verify 401  without authorizationToken', async () => {
+    // Define the request headers without authorizationToken
+    it('should return 401 error for without authorizationToken', async () => {
+        try {
+            const headersWithoutToken = {
+                'Content-Type': 'application/json'
+            };
+            // Make the request without authorizationToken
+            const response = await axios.get(endpointUrl, { headersWithoutToken });
+            if (response.status === 401) {
+                console.log("Test Passed: API Gateway returned 401 Unauthorized error for ' without unauthorized' authorizationToken header.");
+            } else {
+                console.log("Test Failed: API Gateway did not return expected 401 Unauthorized error.");
+            }
+        } catch (error) {
+            // If an error occurs, log it
+            console.error("Test Failed: Error occurred during test:", error.message);
+        }
+    });
+});
+
+
+
+test('Verify 401  with unauthorized authorizationToken', async () => {
+    it('should return 401 error for unauthorized authorizationToken', async () => {
+        try {
+            const headers = {
+                authorizationToken: 'unauthorized'
+            };
+            const response = await axios.get(endpointUrl, { headers });
+            if (response.status === 401) {
+                console.log("Test Passed: API Gateway returned 401 Unauthorized error for 'unauthorized' authorizationToken header.");
+            } else {
+                console.log("Test Failed: API Gateway did not return expected 401 Unauthorized error.");
+            }
+        } catch (error) {
+            // If an error occurs, log it
+            console.error("Test Failed: Error occurred during test:", error.message);
+        }
+    });
+});
+
+
+test('Verify 403 with Bearer deny Authorization Token', () => {
+
+    it('should return 403 error if authorizationToken is "Bearer deny"', async () => {
+        try {
+            const headers = {
+                'authorizationToken': 'Bearer deny'
+            };// Make a request to the API Gateway endpoint with the specified headers
+            const response = await axios.get(endpointUrl, { headers });
+            // Assert that the response status is 403
+            expect(response.status).to.equal(403);
+        } catch (error) {
+            throw new Error(`Test failed: ${error.message}`);
+        }
+    });
+});
+
+test('Verify 200 with Bearer allow Authorization Token', () => {
+    it('should return a 200 when authorizationToken is "Bearer allow"', async () => {
+        try {
+            const headers = {
+                'authorizationToken': 'Bearer allow'
+            };
+            const response = await axios.get(endpointUrl, { headers });
+            // Assert that the response status is 200
+            expect(response.status).to.equal(200);
+        } catch (error) {
+            throw new Error(`Test failed: ${error.message}`);
+        }
+    });
+
+});
+
+test('Verify 200 with Bearer allow Authorization Token', () => {
+
+    describe('API Gateway Authorization Token Test', () => {
+        test('When authorizationToken is default, API Gateway returns 500', async () => {
+            try {
+                const headers = {
+                    'authorizationToken': 'shilpa'
+                };
+                const response = await axios.get(endpointUrl, { headers });
+                expect(response.status).toBe(500);
+            } catch (error) {
+                throw new Error(`Test failed: ${error.message}`);
+            }
+        });
+    })
+});
+
+
